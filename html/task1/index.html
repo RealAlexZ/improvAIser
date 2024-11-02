@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>ImprovAIser™ Piano Sequencer</title>
+        <!-- CSS Styles -->
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Anta&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            --clr-cyan: rgba(11, 217, 231, 0.904);
+        }
+
+        body {
+            background-color: #000000e0;
+            padding: 10px;
+            font-family: Anta, Poppins, Verdana, Geneva, Tahoma, sans-serif;
+            color: aliceblue;
+            margin: 0;
+            width: 100vw;
+            --webkit-user-select: none;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #piano {
+            background-color: #070707;
+            width: 90vw;
+            max-width: 1200px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: absolute;
+            top: 10vh;
+            align-self: center;
+            justify-self: center;
+            border-radius: 10px;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                        rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                        rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                        rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                        rgba(0, 0, 0, 0.09) 0px -3px 5px;
+            overflow: hidden;
+            padding: 10px 10px 2px 10px;
+            min-width: 400px;
+            min-height: 300px;
+        }
+
+        #pianolabel {
+            font-family: Anta, Verdana, Geneva, Tahoma, sans-serif;
+            width: 95%;
+            height: 10%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin: 0 3%;
+            position: relative;
+        }
+
+        h1 {
+            align-self: flex-start;
+            font-size: 3rem;
+        }
+
+        #noteDisplay {
+            width: 20%;
+            height: 50px;
+            border-radius: 5px;
+            background-color: #1a1717c5;
+            align-self: center;
+            justify-self: center;
+            align-items: center;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        #noteDisplay::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--clr-cyan);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            transition: width 0.6s, height 0.6s;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        #noteDisplay:active::before {
+            width: 200px;
+            height: 200px;
+            opacity: 0.3;
+        }
+
+        #noteDisplay span {
+            position: relative;
+            z-index: 2;
+        }
+
+        #noteDisplay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(11, 217, 231, 0.3);
+            border: 1px solid var(--clr-cyan);
+            text-shadow: 0 0 8px var(--clr-cyan);
+        }
+
+        #noteDisplay:active {
+            transform: translateY(1px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        credit {
+            text-align: right;
+        }
+
+        .note {
+            font-family: Kanit, Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 1rem;
+        }
+
+        .keys {
+            display: flex;
+            overflow: none;
+            justify-content: center;
+            align-items: flex-end;
+            width: 95%;
+            position: relative;
+            align-self: center;
+            height: 30%;
+            margin-top: 15px;
+        }
+
+        small {
+            font-size: 0.7rem;
+        }
+
+        .keywhite {
+            flex: 1;
+            background-color: #ffffff;
+            position: static;
+            width: 4%;
+            height: 100%;
+            margin: 2px;
+            float: left;
+            border-radius: 0 0 5px 5px;
+            color: #000000;
+            text-align: center;
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column-reverse;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                        rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                        rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                        rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                        rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        }
+
+        .keywhite:hover {
+            background-color: #ffffffc9;
+        }
+
+        .keywhite.pressed {
+            background-color: #ffffffaf;
+        }
+
+        .keyboard {
+            text-transform: uppercase;
+        }
+
+        .keyblack {
+            background-color: #131314;
+            height: 60%;
+            position: relative;
+            top: -41%;
+            margin-left: -17.5px;
+            margin-right: -17.5px;
+            width: 3.05%;
+            border-radius: 0 0 5px 5px;
+            z-index: 10;
+            color: #ffffff;
+            text-align: center;
+            display: flex;
+            flex-direction: column-reverse;
+            padding-bottom: 5px;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                        rgba(0, 0, 0, 0.12) 0px -12px 30px;
+            border-top: 1px solid black;
+        }
+
+        .keyblack:hover {
+            background-color: #1c1d20;
+        }
+
+        .keyblack.pressed {
+            background-color: #25262c;
+        }
+
+        footer {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            color: #ffffff;
+            position: fixed;
+            bottom: 0;
+            height: 5vh;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                        rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                        rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                        rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                        rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        }
+
+        a, a:visited {
+            color: aliceblue;
+            text-decoration: none;
+        }
+
+        .hoveranimation:hover {
+            color: #fff;
+            text-shadow: 0 0 1px var(--clr-cyan),
+                        0 0 5px var(--clr-cyan),
+                        0 0 10px var(--clr-cyan),
+                        0 0 20px var(--clr-cyan);
+        }
+
+        a:hover {
+            text-decoration: none;
+            color: var(--clr-cyan);
+        }
+
+        /* Tablets Portrait */
+        @media (max-width: 1200px) {
+            .keys {
+                height: 50px;
+            }
+            .two {
+                display: none;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            credit {
+                font: 0.5rem;
+            }
+            
+            .keyblack {
+                margin-left: -17px;
+                margin-right: -17px;
+                width: 34px;
+            }
+        }
+
+        /* Tablets Landscape */
+        @media (max-width: 1200px) and (max-height: 600px){
+            .two {
+                display: none;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            credit {
+                font: 0.5rem;
+            }
+            
+            .keyblack {
+                margin-left: -20px;
+                margin-right: -20px;
+                width: 5%;
+            }
+
+            #piano {
+                position: absolute;
+                top: 20vh;
+            }
+
+            .keyboard, #noteDisplay {
+                display: none;
+            }
+        }
+
+        /* Phones Portrait */
+        @media (max-width: 600px) {
+            .zero {
+                display: none;
+            }
+
+            .keyblack {
+                margin-left: -22px;
+                margin-right: -22px;
+                width: 10%;
+            }
+            
+            .keyboard, small, #noteDisplay {
+                display: none;
+            }
+        }
+
+        /* Phones Landscape */
+        @media (max-height: 420px) and (max-width: 720px){
+            .zero {
+                display: none;
+            }
+
+            .keyblack {
+                margin-left: -20px;
+                margin-right: -20px;
+                width: 8%;
+            }
+
+            .keyboard, small, #noteDisplay {
+                display: none;
+            }
+            
+            #piano {
+                position: absolute;
+                top: 5px;
+            }
+
+            .keywhite {
+                width: 10%;
+                margin: 0 5px;
+            }
+        }
+
+        .sequencer-container {
+            background-color: #070707;
+            width: 95%;
+            max-width: 1200px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            align-self: center;
+            justify-self: center;
+            border-radius: 10px;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                        rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                        rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                        rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                        rgba(0, 0, 0, 0.09) 0px -3px 5px;
+            overflow: hidden;
+            padding: 2px; /* DO NOT REMOVE */
+            margin-bottom: 10px;
+            min-width: 400px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            font-family: Anta, Poppins, Verdana, Geneva, Tahoma, sans-serif;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            color: aliceblue;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--clr-cyan);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            transition: width 0.6s, height 0.6s;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .btn:active::before {
+            width: 200px;
+            height: 200px;
+            opacity: 0.3;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-play { 
+            background-color: #1a1717c5;
+            border: 1px solid transparent;
+        }
+
+        .btn-record { 
+            background-color: #1a1717c5;
+            border: 1px solid transparent;
+        }
+
+        .btn-stop { 
+            background-color: #1a1717c5;
+            border: 1px solid transparent;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border: 1px solid #333;
+        }
+
+        .btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(11, 217, 231, 0.3);
+            border: 1px solid var(--clr-cyan);
+        }
+
+        .btn:not(:disabled):active {
+            transform: translateY(1px);
+        }
+
+        .btn-play:not(:disabled):hover { 
+            text-shadow: 0 0 8px var(--clr-cyan);
+        }
+
+        .btn-record:not(:disabled):hover { 
+            text-shadow: 0 0 8px #ff4444;
+        }
+
+        .btn-stop:not(:disabled):hover { 
+            text-shadow: 0 0 8px #ffaa00;
+        }
+
+        .sequence-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .beat-box {
+            aspect-ratio: 1 / 1;
+            border-radius: 5px;
+            background-color: #1a1717c5;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                        rgba(0, 0, 0, 0.12) 0px -12px 30px;
+        }
+
+        .beat-box.active {
+            background-color: var(--clr-cyan);
+        }
+
+        .beat-box.correct {
+            background-color: #63DBAF;
+        }
+
+        .beat-box.incorrect {
+            background-color: #EF5E6D;
+        }
+
+        .beat-box.current {
+            box-shadow: 0 0 10px var(--clr-cyan);
+        }
+
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--clr-cyan);
+            font-size: 4rem;
+            z-index: 1000;
+            font-family: Anta, Poppins, Verdana;
+        }
+        </style>
+        <!-- React and Babel Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    </head>
+    <body>
+        <div id="piano">
+        <div id="pianolabel">
+            <h2 id="title" class="hoveranimation"><i>ImprovAIser&trade;</i></h2>
+            <h3 id="noteDisplay"><span>Welcome</span></h3>
+            <credit>
+            <div>Play <small>with</small> Different Keys</div> 
+            <div><small>To</small> Explore <small>Our Beautiful</small></div>
+            <div>Pentatonic Scale</div> 
+            </credit>
+        </div>
+        <div id="sequencer-root"></div>
+        <div class="keys">
+            <div id="C4" class="keywhite one"><span class="note"></span><span class="keyboard">A</span></div>
+            <div id="Db4" class="keyblack one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="D4" class="keywhite one"><span class="note"></span><span class="keyboard">S</span></div>
+            <div id="Eb4" class="keyblack one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="E4" class="keywhite one"><span class="note"></span><span class="keyboard">D</span></div>
+            <div id="F4" class="keywhite one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="Gb4" class="keyblack one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="G4" class="keywhite one"><span class="note"></span><span class="keyboard">F</span></div>
+            <div id="Ab4" class="keyblack one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="A4" class="keywhite one"><span class="note"></span><span class="keyboard">G</span></div>
+            <div id="Bb5" class="keyblack one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="B4" class="keywhite one"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="C5" class="keywhite one"><span class="note"></span><span class="keyboard">H</span></div>
+            <div id="Db5" class="keyblack two"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="D5" class="keywhite two"><span class="note"></span><span class="keyboard">J</span></div>
+            <div id="Eb5" class="keyblack two"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="E5" class="keywhite two"><span class="note"></span><span class="keyboard">K</span></div>
+            <div id="F5" class="keywhite two"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="Gb5" class="keyblack two"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="G5" class="keywhite two"><span class="note"></span><span class="keyboard">L</span></div>
+            <div id="Ab5" class="keyblack two"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="A5" class="keywhite two"><span class="note"></span><span class="keyboard">;</span></div>
+            <div id="Bb5" class="keyblack two"><span class="note"></span><span class="keyboard"> </span></div>
+            <div id="B5" class="keywhite two"><span class="note"></span><span class="keyboard"> </span></div>
+        </div>
+        </div>
+
+        <!-- External Scripts -->
+        <script type="text/javascript">
+        // script.js content
+
+        // Selecting piano keys using their ids
+        let keys = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5'];
+        let pianoKeys = {};
+        keys.forEach(function(key){
+            pianoKeys[key] = document.querySelector('#'+key);
+        });
+
+        let noteDirectory = 'notes';
+
+        // Playing the note (at max volume)
+        function playNote(note) {
+            let audio = audioFiles[note].cloneNode(true);  // Clone Audio object
+
+            audio.volume = 1.0;
+            audio.play();
+            
+            audio.onended = function () {
+            audio.currentTime = 0;
+            };
+        }
+
+        // Pressed animation defining and mousedown/up calling in
+        function addPressed(key) {
+            key.classList.add('pressed');
+        }
+
+        function removePressed(key) {
+            key.classList.remove('pressed');
+        }
+
+        // Mouse Events
+        keys.forEach(function(key){
+            pianoKeys[key].onmousedown = function(){
+            playNote(key);
+            addPressed(this);
+            noteDisplay.innerText = key; // Fixed mouse note Display error
+            };
+        
+            pianoKeys[key].onmouseup = function(){
+            removePressed(this);
+            };
+
+            pianoKeys[key].onmouseout = function(){
+            removePressed(this);
+            };
+        });
+
+        // Keyboard handling
+        const keyMappings = {
+            'a': 'C4',
+            's': 'D4',
+            'd': 'E4',
+            'f': 'G4',
+            'g': 'A4',
+            'h': 'C5',
+            'j': 'D5',
+            'k': 'E5',
+            'l': 'G5',
+            ';': 'A5'
+        };
+
+        let noteDisplay = document.querySelector('#noteDisplay');
+        let originalText = noteDisplay.innerText;
+        const pressedKeys = {}; // Fixed bell ringing issue
+        let loaded = false;
+
+        document.body.addEventListener('keydown', function(e) {
+            if (loaded === true){
+            const key = e.key.toLowerCase();
+            if(key === ' ') {    // Linking spacebar with noteDisplay
+                noteDisplay.click();
+            }
+            if (keyMappings[key] && !pressedKeys[key]) {
+                let pianoKey = pianoKeys[keyMappings[key]];
+                addPressed(pianoKey);
+                playNote(keyMappings[key]);
+                noteDisplay.innerText = keyMappings[key];
+                pressedKeys[key] = true;
+            }
+            } else {
+            alert('ePiano is loading');
+            }
+        });
+
+        document.body.addEventListener('keyup', function(e) {
+            const key = e.key.toLowerCase();
+            if (keyMappings[key]) {
+            let pianoKey = pianoKeys[keyMappings[key]];
+            removePressed(pianoKey);
+            pressedKeys[key] = false;
+            }
+        });
+
+        // Audio file linking
+        const noteNames = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5'];
+        let audioFiles = {};
+
+        // Audio preloading
+        async function preloadAudio(url) {
+            const audio = new Audio();
+            
+            const load = async () => {
+            return new Promise((resolve, reject) => {
+                audio.src = url;
+                audio.oncanplaythrough = () => resolve(audio);
+                audio.onerror = reject;
+            });
+            };
+            
+            await load();
+            return audio;
+        }
+
+        async function loadAudioFiles() {
+            let notePromises = noteNames.map(note => preloadAudio(`notes/${note}.mp3`));
+            let audios = await Promise.all(notePromises);
+            
+            for(let i = 0; i < noteNames.length; i++) {
+                audioFiles[noteNames[i]] = audios[i];
+            }
+        }
+
+        // Note Names to keys
+        document.addEventListener("DOMContentLoaded", function() {
+            noteDisplay.innerText = "Loading...";
+            
+            let keys = document.querySelectorAll(".keys div");
+            keys.forEach(function(key) {
+            let span = key.querySelector("span");
+            span.textContent = key.id;
+            span.classList.add('hidden');
+            });
+            
+            // Load when page is ready
+            loadAudioFiles().then(() => {
+            noteDisplay.innerText = originalText;
+            loaded = true;
+            });
+        });
+
+        // Toggle Note Display
+        noteDisplay.addEventListener('click', function() {
+            const noteElements = document.querySelectorAll('.note');
+
+            noteElements.forEach((element) => {
+                element.classList.toggle('hidden');
+            });
+        });
+
+        noteDisplay.addEventListener('mouseenter', function() {
+            originalText = noteDisplay.innerText;
+            noteDisplay.innerText = "Toggle Notes";
+            noteDisplay.style.fontSize = "1.1rem";
+        });
+
+        noteDisplay.addEventListener('mouseleave', function() {
+            noteDisplay.innerText = originalText;
+            noteDisplay.style.fontSize = "1.3rem";
+        });
+        </script>
+
+        <!-- Sequencer Script (Babel JSX) -->
+        <script type="text/babel">
+        // sequencer.js content
+
+        const RhythmSequencer = () => {
+            const [isPlaying, setIsPlaying] = React.useState(false);
+            const [isRecording, setIsRecording] = React.useState(false);
+            const [currentBeat, setCurrentBeat] = React.useState(-1);
+            const [userBeats, setUserBeats] = React.useState(Array(16).fill(0));
+            const [countdown, setCountdown] = React.useState(-1);
+
+            const targetPattern = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+            const tempo = 120;
+            const beatInterval = (60 / tempo) * 1000;
+
+            React.useEffect(() => {
+                const handleKeyPress = (e) => {
+                    if (isRecording && e.key === 'j') {
+                        const newBeats = [...userBeats];
+                        if (targetPattern[currentBeat] === 1) {
+                            newBeats[currentBeat] = 1;
+                        } else {
+                            newBeats[currentBeat] = -1;
+                        }
+                        setUserBeats(newBeats);
+                    }
+                };
+
+                if (isRecording) {
+                    window.addEventListener('keydown', handleKeyPress);
+                }
+                return () => window.removeEventListener('keydown', handleKeyPress);
+            }, [isRecording, currentBeat, userBeats]);
+
+            React.useEffect(() => {
+                let intervalId;
+
+                if (countdown > 0) {
+                    intervalId = setInterval(() => {
+                        setCountdown(c => c - 1);
+                    }, 1000);
+                } else if (countdown === 0) {
+                    setIsRecording(true);
+                    setCountdown(-1);
+                    setCurrentBeat(0);
+                }
+
+                if ((isPlaying || isRecording) && countdown === -1) {
+                    intervalId = setInterval(() => {
+                        setCurrentBeat(beat => {
+                            if (beat >= 15) {
+                                if (isRecording) {
+                                    setIsRecording(false);
+                                    setIsPlaying(false);
+                                }
+                                return -1;
+                            }
+                            return beat + 1;
+                        });
+                    }, beatInterval);
+                }
+
+                return () => clearInterval(intervalId);
+            }, [isPlaying, isRecording, countdown]);
+
+            const startPlayback = () => {
+                setIsPlaying(true);
+                setCurrentBeat(0);
+                setUserBeats(Array(16).fill(0));
+            };
+
+            const startRecording = () => {
+                setUserBeats(Array(16).fill(0));
+                setCountdown(4);
+            };
+
+            const stopSequencer = () => {
+                setIsPlaying(false);
+                setIsRecording(false);
+                setCurrentBeat(-1);
+                setCountdown(-1);
+            };
+
+            return (
+                <div className="sequencer-container">
+                    {/* Countdown Overlay */}
+                    {countdown > 0 && (
+                        <div className="countdown-overlay">
+                            {countdown}
+                        </div>
+                    )}
+                    
+                    <div className="controls">
+                        <button
+                            onClick={startPlayback}
+                            disabled={isPlaying || isRecording}
+                            className="btn btn-play"
+                        >
+                            ▶️ Play
+                        </button>
+                        <button
+                            onClick={startRecording}
+                            disabled={isPlaying || isRecording}
+                            className="btn btn-record"
+                        >
+                            ⏺️ Record
+                        </button>
+                        <button
+                            onClick={stopSequencer}
+                            disabled={!isPlaying && !isRecording}
+                            className="btn btn-stop"
+                        >
+                            ⏹️ Stop
+                        </button>
+                    </div>
+
+                    <div>
+                        <div>Rhythm Blocks:</div>
+                        <div className="sequence-grid">
+                            {targetPattern.map((beat, index) => (
+                                <div
+                                    key={`target-${index}`}
+                                    className={`beat-box ${beat ? 'active' : ''} ${currentBeat === index ? 'current' : ''}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>Your Input:</div>
+                        <div className="sequence-grid">
+                            {userBeats.map((beat, index) => (
+                                <div
+                                    key={`user-${index}`}
+                                    className={`beat-box ${
+                                        beat === 1 ? 'correct' : 
+                                        beat === -1 ? 'incorrect' : ''
+                                    } ${currentBeat === index ? 'current' : ''}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(
+            <RhythmSequencer />,
+            document.getElementById('sequencer-root')
+        );
+        </script>
+    </body>
+</html>
