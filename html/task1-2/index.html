@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #28272C, #1A1A1C);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+        }
+        .sequencer-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+        }
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            color: white;
+            cursor: pointer;
+            min-width: 100px;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-play { background-color: #278EEF; }
+        .btn-record { background-color: #EF5E6D; }
+        .btn-stop { background-color: #6b7280; }
+        .sequence-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        .beat-box {
+            aspect-ratio: 1 / 1;
+            border-radius: 0.25rem;
+            background-color: #e5e7eb;
+            box-shadow: 0 0 0 2px #08080A;
+        }
+        .beat-box.active {
+            background-color: #278EEF;
+        }
+        .beat-box.correct {
+            background-color: #63DBAF;
+        }
+        .beat-box.incorrect {
+            background-color: #EF5E6D;
+        }
+        .beat-box.current {
+            box-shadow: 0 0 0 2px #ECE682;
+        }
+        .instructions {
+            text-align: center;
+            color: #4b5563;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #ffffff;
+            font-size: 4rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const RhythmSequencer = () => {
+            const [isPlaying, setIsPlaying] = React.useState(false);
+            const [isRecording, setIsRecording] = React.useState(false);
+            const [currentBeat, setCurrentBeat] = React.useState(-1);
+            const [userBeats, setUserBeats] = React.useState(Array(16).fill(0));
+            const [countdown, setCountdown] = React.useState(-1);
+
+            const targetPattern = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
+            const tempo = 120;
+            const beatInterval = (60 / tempo) * 1000;
+
+            React.useEffect(() => {
+                const handleKeyPress = (e) => {
+                    if (isRecording && e.key === 'j') {
+                        const newBeats = [...userBeats];
+                        if (targetPattern[currentBeat] === 1) {
+                            newBeats[currentBeat] = 1;
+                        } else {
+                            newBeats[currentBeat] = -1;
+                        }
+                        setUserBeats(newBeats);
+                    }
+                };
+
+                if (isRecording) {
+                    window.addEventListener('keydown', handleKeyPress);
+                }
+                return () => window.removeEventListener('keydown', handleKeyPress);
+            }, [isRecording, currentBeat, userBeats]);
+
+            React.useEffect(() => {
+                let intervalId;
+
+                if (countdown > 0) {
+                    intervalId = setInterval(() => {
+                        setCountdown(c => c - 1);
+                    }, 1000);
+                } else if (countdown === 0) {
+                    setIsRecording(true);
+                    setCountdown(-1);
+                    setCurrentBeat(0);
+                }
+
+                if ((isPlaying || isRecording) && countdown === -1) {
+                    intervalId = setInterval(() => {
+                        setCurrentBeat(beat => {
+                            if (beat >= 15) {
+                                if (isRecording) {
+                                    setIsRecording(false);
+                                    setIsPlaying(false);
+                                }
+                                return -1;
+                            }
+                            return beat + 1;
+                        });
+                    }, beatInterval);
+                }
+
+                return () => clearInterval(intervalId);
+            }, [isPlaying, isRecording, countdown]);
+
+            const startPlayback = () => {
+                setIsPlaying(true);
+                setCurrentBeat(0);
+                setUserBeats(Array(16).fill(0));
+            };
+
+            const startRecording = () => {
+                setUserBeats(Array(16).fill(0));
+                setCountdown(4);
+            };
+
+            const stopSequencer = () => {
+                setIsPlaying(false);
+                setIsRecording(false);
+                setCurrentBeat(-1);
+                setCountdown(-1);
+            };
+
+            return (
+                <div className="sequencer-container">
+                    {/* Countdown Overlay */}
+                    {countdown > 0 && (
+                        <div className="countdown-overlay">
+                            {countdown}
+                        </div>
+                    )}
+                    
+                    <div className="controls">
+                        <button
+                            onClick={startPlayback}
+                            disabled={isPlaying || isRecording}
+                            className="btn btn-play"
+                        >
+                            ▶️ Play
+                        </button>
+                        <button
+                            onClick={startRecording}
+                            disabled={isPlaying || isRecording}
+                            className="btn btn-record"
+                        >
+                            ⏺️ Record
+                        </button>
+                        <button
+                            onClick={stopSequencer}
+                            disabled={!isPlaying && !isRecording}
+                            className="btn btn-stop"
+                        >
+                            ⏹️ Stop
+                        </button>
+                    </div>
+
+                    <div>
+                        <div>Rhythm Blocks:</div>
+                        <div className="sequence-grid">
+                            {targetPattern.map((beat, index) => (
+                                <div
+                                    key={`target-${index}`}
+                                    className={`beat-box ${beat ? 'active' : ''} ${currentBeat === index ? 'current' : ''}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>Your Input:</div>
+                        <div className="sequence-grid">
+                            {userBeats.map((beat, index) => (
+                                <div
+                                    key={`user-${index}`}
+                                    className={`beat-box ${
+                                        beat === 1 ? 'correct' : 
+                                        beat === -1 ? 'incorrect' : ''
+                                    } ${currentBeat === index ? 'current' : ''}`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<RhythmSequencer />, document.getElementById('root'));
+    </script>
+</body>
+</html>
