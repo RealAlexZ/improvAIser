@@ -148,6 +148,7 @@
             position: relative;
             align-self: center;
             height: 30%;
+            min-height: 200px;
             margin-top: 15px;
         }
 
@@ -654,15 +655,15 @@
         let audioFiles = {};
 
         // Audio preloading
-        async function preloadAudio(url) {
+        async function preloadAudio(dataUrl) {
             const audio = new Audio();
             
             const load = async () => {
-            return new Promise((resolve, reject) => {
-                audio.src = url;
-                audio.oncanplaythrough = () => resolve(audio);
-                audio.onerror = reject;
-            });
+                return new Promise((resolve, reject) => {
+                    audio.src = dataUrl;
+                    audio.oncanplaythrough = () => resolve(audio);
+                    audio.onerror = reject;
+                });
             };
             
             await load();
@@ -670,11 +671,31 @@
         }
 
         async function loadAudioFiles() {
-            let notePromises = noteNames.map(note => preloadAudio(`notes/${note}.mp3`));
-            let audios = await Promise.all(notePromises);
+            let loadedCount = 0;
+            const totalNotes = noteNames.length;
             
-            for(let i = 0; i < noteNames.length; i++) {
-                audioFiles[noteNames[i]] = audios[i];
+            noteDisplay.innerText = `Loading: 0/${totalNotes}`;
+            
+            try {
+                for(let note of noteNames) {
+                    try {
+                        audioFiles[note] = await preloadAudio(audioData[note]);
+                        loadedCount++;
+                        noteDisplay.innerText = `Loading: ${loadedCount}/${totalNotes}`;
+                    } catch (error) {
+                        console.error(`Failed to load ${note}:`, error);
+                    }
+                }
+                
+                if (loadedCount === totalNotes) {
+                    noteDisplay.innerText = originalText;
+                    loaded = true;
+                } else {
+                    noteDisplay.innerText = "Error: Some notes failed to load";
+                }
+            } catch (error) {
+                console.error("Error loading audio files:", error);
+                noteDisplay.innerText = "Error loading audio";
             }
         }
 
