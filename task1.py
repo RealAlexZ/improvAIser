@@ -26,6 +26,15 @@ main_container = st.container()
 # Get all audio files and convert them to data URLs
 notes_dir = os.path.join(os.path.dirname(__file__), 'html/task1/notes')
 audio_data = {}
+
+# Add the background loop first
+base_path = os.path.join(os.path.dirname(__file__), 'html/task1')
+try:
+    audio_data['background'] = get_audio_data_url(os.path.join(base_path, '4-bar-loop.mp3'))
+except FileNotFoundError:
+    st.error("Missing audio file: 4-bar-loop.mp3")
+
+# Then add piano notes
 for note in ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5']:
     audio_path = os.path.join(notes_dir, f"{note}.mp3")
     try:
@@ -41,6 +50,12 @@ audio_js = f"""
 """
 
 base_path = os.path.join(os.path.dirname(__file__), 'html/task1')
+
+# Add the background loop
+try:
+    audio_data['background'] = get_audio_data_url(os.path.join(base_path, '4-bar-loop.mp3'))
+except FileNotFoundError:
+    st.error("Missing audio file: 4-bar-loop.mp3")
 
 with main_container:
     # Read all necessary files

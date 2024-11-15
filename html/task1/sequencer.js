@@ -4,6 +4,22 @@ const RhythmSequencer = () => {
     const [currentBeat, setCurrentBeat] = React.useState(-1);
     const [userBeats, setUserBeats] = React.useState(Array(16).fill(0));
     const [countdown, setCountdown] = React.useState(-1);
+    
+    const backgroundAudioRef = React.useRef(null);
+    
+    React.useEffect(() => {
+        if (!backgroundAudioRef.current && audioData.background) {
+            backgroundAudioRef.current = new Audio(audioData.background);
+            backgroundAudioRef.current.loop = true;
+        }
+        
+        return () => {
+            if (backgroundAudioRef.current) {
+                backgroundAudioRef.current.pause();
+                backgroundAudioRef.current.currentTime = 0;
+            }
+        };
+    }, []);
 
     const targetPattern = [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0];
     const tempo = 120;
@@ -39,6 +55,8 @@ const RhythmSequencer = () => {
             setIsRecording(true);
             setCountdown(-1);
             setCurrentBeat(0);
+            backgroundAudioRef.current.currentTime = 0;
+            backgroundAudioRef.current.play();
         }
 
         if ((isPlaying || isRecording) && countdown === -1) {
@@ -48,21 +66,29 @@ const RhythmSequencer = () => {
                         if (isRecording) {
                             setIsRecording(false);
                             setIsPlaying(false);
+                            backgroundAudioRef.current.pause();
+                            backgroundAudioRef.current.currentTime = 0;
+                            return -1;
                         }
-                        return -1;
+                        backgroundAudioRef.current.currentTime = 0;
+                        return 0;
                     }
                     return beat + 1;
                 });
             }, beatInterval);
         }
 
-        return () => clearInterval(intervalId);
+        return () => {
+            clearInterval(intervalId);
+        };
     }, [isPlaying, isRecording, countdown]);
 
     const startPlayback = () => {
         setIsPlaying(true);
         setCurrentBeat(0);
         setUserBeats(Array(16).fill(0));
+        backgroundAudioRef.current.currentTime = 0;
+        backgroundAudioRef.current.play();
     };
 
     const startRecording = () => {
@@ -75,6 +101,8 @@ const RhythmSequencer = () => {
         setIsRecording(false);
         setCurrentBeat(-1);
         setCountdown(-1);
+        backgroundAudioRef.current.pause();
+        backgroundAudioRef.current.currentTime = 0;
     };
 
     return (
