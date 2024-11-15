@@ -9,6 +9,14 @@ def get_audio_data_url(file_path):
         audio_b64 = base64.b64encode(audio_bytes).decode()
         return f"data:audio/mp3;base64,{audio_b64}"
 
+def read_file_content(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        st.error(f"Unable to find the file: {file_path}")
+        return ""
+
 # Configure the page layout
 st.set_page_config(layout="wide")
 
@@ -32,15 +40,33 @@ audio_js = f"""
 </script>
 """
 
+base_path = os.path.join(os.path.dirname(__file__), 'html/task1')
+
 with main_container:
-    task1_html_path = os.path.join(os.path.dirname(__file__), 'html/task1/index.html')
+    # Read all necessary files
+    css_content = read_file_content(os.path.join(base_path, 'styles.css'))
+    script_content = read_file_content(os.path.join(base_path, 'script.js'))
+    sequencer_content = read_file_content(os.path.join(base_path, 'sequencer.js'))
+    
     try:
-        with open(task1_html_path, 'r', encoding='utf-8') as f:
+        with open(os.path.join(base_path, 'index.html'), 'r', encoding='utf-8') as f:
             task1_html = f.read()
-            # Insert audio data right after the opening <head> tag
-            task1_html = task1_html.replace('<head>', f'<head>{audio_js}', 1)
+            
+            # Create style and script tags
+            style_tag = f"<style>{css_content}</style>"
+            script_tags = f"""
+                {audio_js}
+                <script>{script_content}</script>
+                <script type="text/babel">{sequencer_content}</script>
+            """
+            
+            # Insert CSS in head
+            task1_html = task1_html.replace('</head>', f'{style_tag}</head>', 1)
+            # Insert scripts at the end of body
+            task1_html = task1_html.replace('</body>', f'{script_tags}</body>', 1)
+            
     except FileNotFoundError:
-        st.error(f"Unable to find the file: {task1_html_path}")
+        st.error(f"Unable to find the file: {os.path.join(base_path, 'index.html')}")
         task1_html = "<p>Error: Task1 HTML file not found.</p>"
     
     # Inject the component into the Streamlit app
