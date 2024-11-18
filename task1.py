@@ -24,11 +24,11 @@ st.set_page_config(layout="wide")
 main_container = st.container()
 
 # Get all audio files and convert them to data URLs
-notes_dir = os.path.join(os.path.dirname(__file__), 'html/task2/notes')
+notes_dir = os.path.join(os.path.dirname(__file__), 'html/task3/notes')
 audio_data = {}
 
 # Add the background loop first
-base_path = os.path.join(os.path.dirname(__file__), 'html/task2')
+base_path = os.path.join(os.path.dirname(__file__), 'html/task3')
 try:
     audio_data['background'] = get_audio_data_url(os.path.join(base_path, '4-bar-loop.mp3'))
 except FileNotFoundError:
@@ -49,7 +49,7 @@ audio_js = f"""
 </script>
 """
 
-base_path = os.path.join(os.path.dirname(__file__), 'html/task2')
+base_path = os.path.join(os.path.dirname(__file__), 'html/task3')
 
 # Add the background loop
 try:
@@ -61,11 +61,11 @@ with main_container:
     # Read all necessary files
     css_content = read_file_content(os.path.join(base_path, 'styles.css'))
     script_content = read_file_content(os.path.join(base_path, 'script.js'))
-    sequencer_content = read_file_content(os.path.join(base_path, 'sequencer-2-1.js'))
+    sequencer_content = read_file_content(os.path.join(base_path, 'sequencer-3-1.js'))
     
     try:
         with open(os.path.join(base_path, 'index.html'), 'r', encoding='utf-8') as f:
-            task2_html = f.read()
+            task3_html = f.read()
             
             # Create style and script tags
             style_tag = f"<style>{css_content}</style>"
@@ -76,13 +76,13 @@ with main_container:
             """
             
             # Insert CSS in head
-            task2_html = task2_html.replace('</head>', f'{style_tag}</head>', 1)
+            task3_html = task3_html.replace('</head>', f'{style_tag}</head>', 1)
             # Insert scripts at the end of body
-            task2_html = task2_html.replace('</body>', f'{script_tags}</body>', 1)
+            task3_html = task3_html.replace('</body>', f'{script_tags}</body>', 1)
             
     except FileNotFoundError:
         st.error(f"Unable to find the file: {os.path.join(base_path, 'index.html')}")
-        task2_html = "<p>Error: task2 HTML file not found.</p>"
+        task3_html = "<p>Error: task3 HTML file not found.</p>"
     
     # Inject the component into the Streamlit app
-    components.html(task2_html, height=700, scrolling=True)
+    components.html(task3_html, height=700, scrolling=True)
