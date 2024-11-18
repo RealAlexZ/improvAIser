@@ -61,7 +61,7 @@ with main_container:
     # Read all necessary files
     css_content = read_file_content(os.path.join(base_path, 'styles.css'))
     script_content = read_file_content(os.path.join(base_path, 'script.js'))
-    sequencer_content = read_file_content(os.path.join(base_path, 'sequencer.js'))
+    sequencer_content = read_file_content(os.path.join(base_path, 'sequencer-2-1.js'))
     
     try:
         with open(os.path.join(base_path, 'index.html'), 'r', encoding='utf-8') as f:
