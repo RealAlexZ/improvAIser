@@ -24,11 +24,11 @@ st.set_page_config(layout="wide")
 main_container = st.container()
 
 # Get all audio files and convert them to data URLs
-notes_dir = os.path.join(os.path.dirname(__file__), 'html/task1/notes')
+notes_dir = os.path.join(os.path.dirname(__file__), 'html/task2/notes')
 audio_data = {}
 
 # Add the background loop first
-base_path = os.path.join(os.path.dirname(__file__), 'html/task1')
+base_path = os.path.join(os.path.dirname(__file__), 'html/task2')
 try:
     audio_data['background'] = get_audio_data_url(os.path.join(base_path, '4-bar-loop.mp3'))
 except FileNotFoundError:
@@ -49,7 +49,7 @@ audio_js = f"""
 </script>
 """
 
-base_path = os.path.join(os.path.dirname(__file__), 'html/task1')
+base_path = os.path.join(os.path.dirname(__file__), 'html/task2')
 
 # Add the background loop
 try:
@@ -65,7 +65,7 @@ with main_container:
     
     try:
         with open(os.path.join(base_path, 'index.html'), 'r', encoding='utf-8') as f:
-            task1_html = f.read()
+            task2_html = f.read()
             
             # Create style and script tags
             style_tag = f"<style>{css_content}</style>"
@@ -76,13 +76,13 @@ with main_container:
             """
             
             # Insert CSS in head
-            task1_html = task1_html.replace('</head>', f'{style_tag}</head>', 1)
+            task2_html = task2_html.replace('</head>', f'{style_tag}</head>', 1)
             # Insert scripts at the end of body
-            task1_html = task1_html.replace('</body>', f'{script_tags}</body>', 1)
+            task2_html = task2_html.replace('</body>', f'{script_tags}</body>', 1)
             
     except FileNotFoundError:
         st.error(f"Unable to find the file: {os.path.join(base_path, 'index.html')}")
-        task1_html = "<p>Error: Task1 HTML file not found.</p>"
+        task2_html = "<p>Error: task2 HTML file not found.</p>"
     
     # Inject the component into the Streamlit app
-    components.html(task1_html, height=700, scrolling=True)
+    components.html(task2_html, height=700, scrolling=True)

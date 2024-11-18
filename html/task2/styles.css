@@ -1,0 +1,502 @@
+@import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anta&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    --clr-cyan: rgba(11, 217, 231, 0.904);
+}
+
+body {
+    background-color: #000000e0;
+    padding: 10px;
+    font-family: Anta, Poppins, Verdana, Geneva, Tahoma, sans-serif;
+    color: aliceblue;
+    margin: 0;
+    width: 100vw;
+    --webkit-user-select: none;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#piano {
+    background-color: #070707;
+    width: 90vw;
+    max-width: 1200px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 10vh;
+    align-self: center;
+    justify-self: center;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    overflow: hidden;
+    padding: 10px 10px 2px 10px;
+    min-width: 400px;
+    min-height: 300px;
+}
+
+#pianolabel {
+    font-family: Anta, Verdana, Geneva, Tahoma, sans-serif;
+    width: 95%;
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 3%;
+    position: relative;
+}
+
+h1 {
+    align-self: flex-start;
+    font-size: 3rem;
+}
+
+#noteDisplay {
+    width: 20%;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #1a1717c5;
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+#noteDisplay::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--clr-cyan);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    transition: width 0.6s, height 0.6s;
+    opacity: 0;
+    z-index: 1;
+}
+
+#noteDisplay:active::before {
+    width: 200px;
+    height: 200px;
+    opacity: 0.3;
+}
+
+#noteDisplay span {
+    position: relative;
+    z-index: 2;
+}
+
+#noteDisplay:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(11, 217, 231, 0.3);
+    border: 1px solid var(--clr-cyan);
+    text-shadow: 0 0 8px var(--clr-cyan);
+}
+
+#noteDisplay:active {
+    transform: translateY(1px);
+}
+
+.hidden {
+    display: none;
+}
+
+credit {
+    text-align: right;
+}
+
+.note {
+    font-family: Kanit, Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1rem;
+}
+
+.keys {
+    display: flex;
+    overflow: none;
+    justify-content: center;
+    align-items: flex-end;
+    width: 95%;
+    position: relative;
+    align-self: center;
+    height: 30%;
+    min-height: 200px;
+    margin-top: 15px;
+}
+
+small {
+    font-size: 0.7rem;
+}
+
+.keywhite {
+    flex: 1;
+    background-color: #ffffff;
+    position: static;
+    width: 4%;
+    height: 100%;
+    margin: 2px;
+    float: left;
+    border-radius: 0 0 5px 5px;
+    color: #000000;
+    text-align: center;
+    font-size: 1.5rem;
+    display: flex;
+    flex-direction: column-reverse;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.keywhite:hover {
+    background-color: #ffffffc9;
+}
+
+.keywhite.pressed {
+    background-color: #ffffffaf;
+}
+
+.keyboard {
+    text-transform: uppercase;
+}
+
+.keyblack {
+    background-color: #131314;
+    height: 60%;
+    position: relative;
+    top: -41%;
+    margin-left: -17.5px;
+    margin-right: -17.5px;
+    width: 3.05%;
+    border-radius: 0 0 5px 5px;
+    z-index: 10;
+    color: #ffffff;
+    text-align: center;
+    display: flex;
+    flex-direction: column-reverse;
+    padding-bottom: 5px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px;
+    border-top: 1px solid black;
+}
+
+.keyblack:hover {
+    background-color: #1c1d20;
+}
+
+.keyblack.pressed {
+    background-color: #25262c;
+}
+
+footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000000;
+    color: #ffffff;
+    position: fixed;
+    bottom: 0;
+    height: 5vh;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+a, a:visited {
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.hoveranimation:hover {
+    color: #fff;
+    text-shadow: 0 0 1px var(--clr-cyan),
+                0 0 5px var(--clr-cyan),
+                0 0 10px var(--clr-cyan),
+                0 0 20px var(--clr-cyan);
+}
+
+a:hover {
+    text-decoration: none;
+    color: var(--clr-cyan);
+}
+
+/* Tablets Portrait */
+@media (max-width: 1200px) {
+    .keys {
+        height: 50px;
+    }
+    .two {
+        display: none;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    credit {
+        font: 0.5rem;
+    }
+    
+    .keyblack {
+        margin-left: -17px;
+        margin-right: -17px;
+        width: 34px;
+    }
+}
+
+/* Tablets Landscape */
+@media (max-width: 1200px) and (max-height: 600px){
+    .two {
+        display: none;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    credit {
+        font: 0.5rem;
+    }
+    
+    .keyblack {
+        margin-left: -20px;
+        margin-right: -20px;
+        width: 5%;
+    }
+
+    #piano {
+        position: absolute;
+        top: 20vh;
+    }
+
+    .keyboard, #noteDisplay {
+        display: none;
+    }
+}
+
+/* Phones Portrait */
+@media (max-width: 600px) {
+    .zero {
+        display: none;
+    }
+
+    .keyblack {
+        margin-left: -22px;
+        margin-right: -22px;
+        width: 10%;
+    }
+    
+    .keyboard, small, #noteDisplay {
+        display: none;
+    }
+}
+
+/* Phones Landscape */
+@media (max-height: 420px) and (max-width: 720px){
+    .zero {
+        display: none;
+    }
+
+    .keyblack {
+        margin-left: -20px;
+        margin-right: -20px;
+        width: 8%;
+    }
+
+    .keyboard, small, #noteDisplay {
+        display: none;
+    }
+    
+    #piano {
+        position: absolute;
+        top: 5px;
+    }
+
+    .keywhite {
+        width: 10%;
+        margin: 0 5px;
+    }
+}
+
+.sequencer-container {
+    background-color: #070707;
+    width: 95%;
+    max-width: 1200px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    align-self: center;
+    justify-self: center;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px, 
+                rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                rgba(0, 0, 0, 0.17) 0px 12px 13px, 
+                rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    overflow: hidden;
+    padding: 2px; /* DO NOT REMOVE */
+    margin-bottom: 10px;
+    min-width: 400px;
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.btn {
+    font-family: Anta, Poppins, Verdana, Geneva, Tahoma, sans-serif;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    color: aliceblue;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--clr-cyan);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    transition: width 0.6s, height 0.6s;
+    opacity: 0;
+    z-index: 1;
+}
+
+.btn:active::before {
+    width: 200px;
+    height: 200px;
+    opacity: 0.3;
+}
+
+.btn span {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-play { 
+    background-color: #1a1717c5;
+    border: 1px solid transparent;
+}
+
+.btn-record { 
+    background-color: #1a1717c5;
+    border: 1px solid transparent;
+}
+
+.btn-stop { 
+    background-color: #1a1717c5;
+    border: 1px solid transparent;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border: 1px solid #333;
+}
+
+.btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(11, 217, 231, 0.3);
+    border: 1px solid var(--clr-cyan);
+}
+
+.btn:not(:disabled):active {
+    transform: translateY(1px);
+}
+
+.btn-play:not(:disabled):hover { 
+    text-shadow: 0 0 8px var(--clr-cyan);
+}
+
+.btn-record:not(:disabled):hover { 
+    text-shadow: 0 0 8px #ff4444;
+}
+
+.btn-stop:not(:disabled):hover { 
+    text-shadow: 0 0 8px #ffaa00;
+}
+
+.sequence-grid {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.beat-box {
+    aspect-ratio: 1 / 1;
+    border-radius: 5px;
+    background-color: #1a1717c5;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 20px 21px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px;
+}
+
+.beat-box.active {
+    background-color: var(--clr-cyan);
+}
+
+.beat-box.correct {
+    background-color: #63DBAF;
+}
+
+.beat-box.incorrect {
+    background-color: #EF5E6D;
+}
+
+.beat-box.current {
+    box-shadow: 0 0 10px var(--clr-cyan);
+}
+
+.countdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--clr-cyan);
+    font-size: 4rem;
+    z-index: 1000;
+    font-family: Anta, Poppins, Verdana;
+}
