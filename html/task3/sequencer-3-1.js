@@ -24,10 +24,11 @@ const RhythmSequencer = () => {
 
     const tempo = 120;
     const beatInterval = (60 / tempo) * 1000;
+    const eligibleKeys = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'];
 
     React.useEffect(() => {
         const handleKeyPress = (e) => {
-            if (isRecording && e.key === 'j') {
+            if (isRecording && eligibleKeys.includes(e.key)) {
                 const newBeatsRow1 = [...userBeatsRow1];
                 const newBeatsRow2 = [...userBeatsRow2];
                 
