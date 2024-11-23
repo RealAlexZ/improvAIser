@@ -61,7 +61,7 @@ def get_page(task):
 
     # Define per-task session states
     if f"show_instruction_dialog_{task}" not in st.session_state:
-        show_instruction_dialog(instructions, False)
+        show_instruction_dialog(instructions, True)
         st.session_state[f"show_instruction_dialog_{task}"] = "whatever"
     if f"generate_message_{task}" not in st.session_state:
         st.session_state[f"generate_message_{task}"] = False
@@ -188,7 +188,7 @@ def get_page(task):
     with st.sidebar:
         st.markdown("⚙︎ Tools")
         if color_button("❔ Instruction", "orange", "container_instruction", "button_instruction"):
-            show_instruction_dialog(instructions, False)
+            show_instruction_dialog(instructions, True)
 
         if color_button("⌾ Lower Pace", "#FF5F1F", "container_lower", "button_lower"):
             pass
