@@ -1,9 +1,27 @@
+const rhythmBlocks = [
+    [1, 0, 0, 0],
+    [1, 0, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 1, 1]
+];
+
+const generateRandomPattern = () => {
+    let pattern = [];
+    // We need 4 blocks to make a 16-beat pattern
+    for (let i = 0; i < 4; i++) {
+        const randomBlock = rhythmBlocks[Math.floor(Math.random() * rhythmBlocks.length)];
+        pattern = [...pattern, ...randomBlock];
+    }
+    return pattern;
+};
+
 const RhythmSequencer = () => {
     const [isPlaying, setIsPlaying] = React.useState(false);
     const [isRecording, setIsRecording] = React.useState(false);
     const [currentBeat, setCurrentBeat] = React.useState(-1);
     const [userBeats, setUserBeats] = React.useState(Array(16).fill(0));
     const [countdown, setCountdown] = React.useState(-1);
+    const [targetPattern, setTargetPattern] = React.useState(generateRandomPattern());
     
     const backgroundAudioRef = React.useRef(null);
     
@@ -21,13 +39,13 @@ const RhythmSequencer = () => {
         };
     }, []);
 
-    const targetPattern = [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1];
     const tempo = 120;
     const beatInterval = (60 / tempo) * 1000;
+    const eligibleKeys = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';'];
 
     React.useEffect(() => {
         const handleKeyPress = (e) => {
-            if (isRecording && e.key === 'j') {
+            if (isRecording && eligibleKeys.includes(e.key)) {
                 const newBeats = [...userBeats];
                 if (targetPattern[currentBeat] === 1) {
                     newBeats[currentBeat] = 1;
@@ -84,6 +102,7 @@ const RhythmSequencer = () => {
     }, [isPlaying, isRecording, countdown]);
 
     const startPlayback = () => {
+        setTargetPattern(generateRandomPattern());
         setIsPlaying(true);
         setCurrentBeat(0);
         setUserBeats(Array(16).fill(0));
