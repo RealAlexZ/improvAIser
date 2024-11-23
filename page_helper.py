@@ -61,7 +61,7 @@ def get_page(task):
 
     # Define per-task session states
     if f"show_instruction_dialog_{task}" not in st.session_state:
-        show_instruction_dialog(instructions, True)
+        show_instruction_dialog(instructions, False)
         st.session_state[f"show_instruction_dialog_{task}"] = "whatever"
     if f"generate_message_{task}" not in st.session_state:
         st.session_state[f"generate_message_{task}"] = False
