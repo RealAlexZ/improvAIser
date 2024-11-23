@@ -111,7 +111,6 @@ const RhythmSequencer = () => {
     };
 
     const startRecording = () => {
-        setTargetPattern(generateRandomPattern());
         setUserBeats(Array(16).fill(0));
         setCountdown(4);
     };
