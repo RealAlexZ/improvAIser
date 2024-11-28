@@ -195,6 +195,10 @@ def assess_performance(task):
         The system will encode the expected input and the student's input in the following format: X X X X | X X X X | X X X X | X X X X, where "X" can be either "0" or "1".
         "1" means the keyword is struck at that beat while "0" means the opposite.
         Each bar is separated by "|".
+        You will be given both the expected input and the student's input and please give them your feedback in less than three sentences.
+        If they complete the task correctly, you should praise them with "**Congratulations! 🎉**"
+        If they make mistakes, try to encourage them and tell them how they can improve.
+        Examples of mistakes include 1) the student struck the keyword when they shouldn't, 2) the student didn't strike the keyword when they should do so.
         """
 
         target_pattern_str = ""
@@ -225,17 +229,54 @@ def assess_performance(task):
         """
 
     elif task == 2:
-        pass
+        system_prompt += """
+        Now they are doing the "try different pitches" task in this tutoring system.
+        In this task, the student is asked to follow the rhythm given by the system by using different pitches. In other words, the student will need to decide which note to play at each beat.
+        The system will encode both the expected input and the student's input in the same format: X X X X | X X X X | X X X X | X X X X where each bar is separated by "|".
+        But the "X" represents different things in the two cases. For the expected input, "X" can be either "0" or "1". "1" means the keyword should be struck at that beat while "0" means the opposite.
+        For the student's input, "X" will be the key that te student struck at each beat. In this task, the student can strike the following keys: "C4", "D4", "E4", "G4", "A4", "C5", "D5", "E5", "G5", "A5". If the student doesn't strike the keyboard at one beat, then "X" will "0".
+        You will be given both the expected input and the student's input and please give them your feedback accordingly in less than three to four sentences.
+        You should measure the student's performance in two dimensions. One dimenstion is rhythm. If the student didn't follow the given rhythm correctly, you should try to encourage them and tell them how they can improve. Examples of not following the rhythm include 1) the student struck the keyword when they shouldn't (i.e. the student input is not "0" while the expected input is "0"), 2) the student didn't strike the keyword when they should do so (i.e. the student is "0" while the expected input is "1").
+        The other dimension is melody. Please make comments on how the student's improvisation sounds like. You should check whether the student played different notes. The student doesn't need to use every note above (i.e. three or more notes will be good enough), but if the student only used one or two notes throughout the task, tell them to vary the pitches and give them some suggestions.
+        If the student does well in both rhythm and melody, please praise them "**Congratulations! 🎉**".
+        """
+
+        target_pattern_str = ""
+        input_pattern_str = ""
+
+        with open("log.csv", "r") as f:
+            rows = csv.reader(f)
+            next(rows)
+
+            idx = 0
+            for row in rows:
+                if idx % 4 == 0 and idx != 0:
+                    target_pattern_str += "| "
+                    input_pattern_str += "| "
+
+                target_pattern_str += row[1] + " "
+                input_pattern_str += row[0] + " "
+
+                idx += 1
+
+        print(target_pattern_str)
+        print()
+        print(input_pattern_str)
+
+        user_prompt = f"""
+        The expected input is {target_pattern_str}.
+        The student's input is {input_pattern_str}.
+        """
 
     elif task == 3:
         pass
 
-    system_prompt += """
-    You will be given both the expected input and the student's input and please give them your feedback in less than three sentences.
-    If they complete the task correctly, you should praise them with "**Congratulations! 🎉**"
-    If they make mistakes, try to encourage them and tell them how they can improve.
-    Examples of mistakes include 1) the student struck the keyword when they shouldn't, 2) the student didn't strike the keyword when they should do so.
-    """
+    # system_prompt += """
+    # You will be given both the expected input and the student's input and please give them your feedback in less than three sentences.
+    # If they complete the task correctly, you should praise them with "**Congratulations! 🎉**"
+    # If they make mistakes, try to encourage them and tell them how they can improve.
+    # Examples of mistakes include 1) the student struck the keyword when they shouldn't, 2) the student didn't strike the keyword when they should do so.
+    # """
 
     response = client.chat.completions.create(
         model="gpt-4o",

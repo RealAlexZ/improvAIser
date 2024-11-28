@@ -1,3 +1,13 @@
+const socket = new WebSocket("ws://localhost:6789");
+
+socket.onopen = function(event) {
+    console.log("WebSocket connection established.");
+};
+
+socket.onerror = function(error) {
+    console.error("WebSocket error: ", error);
+};
+
 // Selecting piano keys using their ids
 let keys = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5'];
 let pianoKeys = {};

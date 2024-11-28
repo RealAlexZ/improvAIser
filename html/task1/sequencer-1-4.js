@@ -35,6 +35,10 @@ const RhythmSequencer = () => {
                     newBeats[currentBeat] = -1;
                 }
                 setUserBeats(newBeats);
+
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(keyMappings[e.key] + ":" + currentBeat);  // Send the key press to the server
+                }
             }
         };
 
@@ -68,6 +72,11 @@ const RhythmSequencer = () => {
                             setIsPlaying(false);
                             backgroundAudioRef.current.pause();
                             backgroundAudioRef.current.currentTime = 0;
+                            
+                            if (socket.readyState === WebSocket.OPEN) {
+                                socket.send("END");  // Send the key press to the server
+                            }
+
                             return -1;
                         }
                         backgroundAudioRef.current.currentTime = 0;
@@ -94,6 +103,15 @@ const RhythmSequencer = () => {
     const startRecording = () => {
         setUserBeats(Array(16).fill(0));
         setCountdown(4);
+
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send("Task 1");  // Send the key press to the server
+            let send_str = "";
+            for (let i = 0; i < targetPattern.length; ++i) {
+                send_str += targetPattern[i].toString();
+            }
+            socket.send(send_str);
+        }
     };
 
     const stopSequencer = () => {
